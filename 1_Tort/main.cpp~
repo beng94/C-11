@@ -1,0 +1,181 @@
+#include "fraction.hpp"
+
+#include <iostream>
+
+#include "fraction.hpp"
+
+static int calc_gcd (int a, int b)
+{
+    int tmp;
+    while (b != 0)
+        tmp = a%b, a = b, b = tmp;
+
+    return a;
+}
+
+Fraction::Fraction (int count, int denom)
+{
+    int gcd = calc_gcd(count, denom);
+    this->count = count / gcd;
+    this->denom = denom / gcd;
+}
+
+Fraction operator+ (const Fraction& lhs)
+{
+    return lhs;
+}
+
+Fraction operator+ (const Fraction& lhs, const Fraction& rhs)
+{
+    //TODO: use .count and .denom
+    return Fraction(
+            lhs.get_count() * rhs.get_denom() + rhs.get_count() * lhs.get_denom(),
+            lhs.get_denom() * rhs.get_denom()
+            );
+}
+
+void operator+= (Fraction& lhs, const Fraction& rhs)
+{
+    lhs = lhs + rhs;
+}
+
+void Fraction::operator+= (const Fraction& rhs)
+{
+    //Error: *this += rhs;
+    //(*this).operator+=(rhs);
+    //operator+=(*this, rhs);
+    *this = *this + rhs;
+}
+
+Fraction operator- (const Fraction& lhs)
+{
+    return Fraction(-lhs.get_count(), lhs.get_denom());
+}
+
+Fraction operator- (const Fraction& lhs, const Fraction& rhs)
+{
+    return lhs + (-rhs);
+}
+
+void operator-= (Fraction& lhs, const Fraction& rhs)
+{
+    lhs = lhs - rhs;
+}
+
+Fraction operator* (const Fraction& lhs, const Fraction& rhs)
+{
+    return Fraction(
+            lhs.get_count() * rhs.get_count(),
+            lhs.get_denom() * lhs.get_denom()
+            );
+}
+
+Fraction& operator*= (Fraction& lhs, const Fraction& rhs)
+{
+    lhs = lhs * rhs;
+    return lhs;
+}
+
+Fraction operator/ (const Fraction& lhs, const Fraction& rhs)
+{
+    return Fraction(
+            lhs.get_count() * rhs.get_denom(),
+            lhs.get_denom() * rhs.get_count()
+            );
+}
+
+void operator/= (Fraction& lhs, const Fraction& rhs)
+{
+    lhs = lhs / rhs;
+}
+
+std::istream& operator>> (std::istream& is, Fraction& rhs)
+{
+    int count, denom;
+    is >> count >> denom;
+    rhs = Fraction(count, denom);
+
+    return is;
+}
+
+//Just for debugging
+std::ostream& operator<< (std::ostream& os, const Fraction& rhs)
+{
+    os << rhs.get_count() << " " << rhs.get_denom();
+    return os;
+}
+
+Fraction::operator double() const
+{
+    return (double)count / denom;
+}
+
+int main()
+{
+    Fraction a(1,1);
+    Fraction b (3,1);
+    Fraction c (5,1);
+
+    (a*=b)*= c;
+    std::cout << a << std::endl;
+
+    //TODO: use assert
+    Fraction ctor(10, 5);
+    std::cout << "expected: 2 1" << std::endl;
+    std::cout << ctor << std::endl;
+
+    Fraction plus_1 = +ctor;
+    std::cout << "expected: 2 1" << std::endl;
+    std::cout << plus_1 << std::endl;
+
+    Fraction plus_2 = ctor + ctor;
+    std::cout << "expected: 4 1" << std::endl;
+    std::cout << plus_2 << std::endl;
+
+    Fraction plus_equals(1, 1);
+    operator+=(plus_equals, ctor);
+    std::cout << "expected: 3 1" << std::endl;
+    std::cout << plus_equals << std::endl;
+
+    Fraction min_1 = -ctor;
+    std::cout << "expected: -2 1" << std::endl;
+    std::cout << min_1 << std::endl;
+
+    Fraction min_2 = ctor - ctor;
+    std::cout << "expected: 0 1" << std::endl;
+    std::cout << min_2 << std::endl;
+
+    Fraction min_equals(5, 1);
+    min_equals -= ctor;
+    std::cout << "expected: 3 1" << std::endl;
+    std::cout << min_equals << std::endl;
+
+    Fraction mult = ctor * ctor;
+    std::cout << "expected 4 1" << std::endl;
+    std::cout << mult << std::endl;
+
+    Fraction mult_equals(2, 1);
+    mult_equals *= ctor;
+    std::cout << "expected 4 1" << std::endl;
+    std::cout << mult_equals << std::endl;
+
+    Fraction div = ctor / ctor;
+    std::cout << "expected 1 1" << std::endl;
+    std::cout << div << std::endl;
+
+    Fraction div_equals(2, 1);
+    div_equals /= ctor;
+    std::cout << "expected 1 1" << std::endl;
+    std::cout << div_equals << std::endl;
+
+    Fraction input(1,1);
+    std::cin >> input;
+    std::cout << "expected: your input" << std::endl;
+    std::cout << input << std::endl;
+
+    double cast = (double)ctor;
+    std::cout << "expected: 2.0" << std::endl;
+    std::cout << cast << std::endl;
+
+    return 0;
+}
