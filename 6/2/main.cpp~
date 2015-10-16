@@ -1,0 +1,35 @@
+#include <memory>
+
+template <typename T>
+class Stack
+{
+  private:
+    T* stack;
+    int last_id = 0;
+
+  public:
+    Stack(int size)
+    {
+        this->stack = (T*)malloc(sizeof(T) * size);
+    }
+
+    void push(T item)
+    {
+        new (stack[last_id++]) T{item};
+    }
+
+    T pop()
+    {
+        return stack[last_id--];
+    }
+
+    ~Stack()
+    {
+        delete this->stack;
+    }
+};
+
+int main()
+{
+    return 0;
+}
