@@ -45,11 +45,11 @@ int main()
     #endif
 
     MyString d, e;
-    d = e = "monkey";
+    d = e = "duck";
     #ifdef DEBUG
         std::cout << "Testring MyString operator= (const MyString&): ";
         assert(strcmp(d.get_str(), e.get_str()) == 0 &&
-               strcmp(d.get_str(),"monkey") == 0 &&
+               strcmp(d.get_str(),"duck") == 0 &&
                d.get_ptr() == e.get_ptr() &&
                d.get_ref_cnt() == 2);
         std::cout << "\033[1;32mSuccessful\033[0m" << std::endl;
@@ -57,7 +57,7 @@ int main()
 
     #ifdef DEBUG
         std::cout << "Testing length(): ";
-        assert(d.length() == 6);
+        assert(d.length() == strlen("duck"));
         std::cout << "\033[1;32mSuccessful\033[0m" << std::endl;
     #endif
 
@@ -120,10 +120,10 @@ int main()
 
     #ifdef DEBUG
         std::cout << "Testing std::istream& operator(): ";
-        std::stringstream ss_1 ("monkey");
+        std::stringstream ss_1 ("turtle");
         MyString p;
         ss_1 >> p;
-        assert(strcmp(p.get_str(), "monkey") == 0 &&
+        assert(strcmp(p.get_str(), "turtle") == 0 &&
                p.get_ref_cnt() == 1);
         std::cout << "\033[1;32mSuccessful\033[0m" << std::endl;
     #endif
