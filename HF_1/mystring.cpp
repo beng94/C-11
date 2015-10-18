@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdexcept>
+#include <map>
 
 #include "mystring.h"
 
@@ -42,16 +43,80 @@ bool StringValue::deletable () const
     return this->ref_ == 0;
 }
 
+/* Segédosztály, hogy a map-ban tárolt char*-okat össze tudjam hasonlítani */
+struct cmp_str
+{
+    bool operator() (const char* a, const char* b)
+    {
+        return strcmp(a, b) < 0;
+    }
+};
+
+static std::map<const char*, StringValue*, cmp_str> str_container;
+
+/* Megkeresem, hogy van-e már ilyen string a tárolóban,
+ * ha igen, visszaadom a StringValue címét, egyébkétn nullpptr-t */
+static StringValue* find (const char* str)
+{
+    auto id = str_container.find(str);
+
+    /* Megtaláltam */
+    if (id != str_container.end())
+        return id->second;
+
+    return nullptr;
+}
+
+
+/* Ezzel a függvénnyel tud a MyString új StringValue*-t kérni,
+ * ha már van ilyen string tartalmú StringValue, akkor megkapja
+ * azt a pointert, ha nincsen, akkor létrehozok egyet. */
+static StringValue* create_string(const char* str)
+{
+    /* Megkeresem a tárolóban a string értéket */
+    StringValue* val = find(str);
+    if(val != nullptr)
+    {
+        /* Ha megtaláltam, növelem a referencia számlálót és visszaadom
+         * a megtalált pointert */
+        val->ref();
+        return val;
+    }
+
+    /* Ha nem találtam meg a keresett string-et, akkor létrehozok egy
+     * új StringValue-t a kívánt string értékkel és hozzáadom
+     * a tárolóhoz. */
+    val = new StringValue(str);
+    /* Sok időt spórolhat az ember, ha nem a globális str-t helyezi
+     * el a map-ben, hanem a StringValue-ben tárolt értéket... */
+    str_container.insert(std::pair<const char*, StringValue*>(val->get_str(), val));
+
+    return val;
+}
+
+/* Ezzel a függvénnyel jelzi a MyString, hogy a továbbiakban
+ * nincsen szüksége a StringValue*-re. */
+static void del_str (StringValue* str)
+{
+    auto id = str_container.find(str->get_str());
+
+    /* Biztosan benne van a tárolóban az elem, úgyhogy nincs szükség
+     * leellenőrizni az id-t. Törlöm a tárolóból a bejegyzést. */
+    str_container.erase(id);
+
+    delete str;
+}
+
 /* Default ctor, üres string-et hoz létre */
 MyString::MyString ()
 {
-    ptr = new StringValue("");
+    ptr = create_string("");
 }
 
 /* Ctor char*-ból */
 MyString::MyString (const char* str)
 {
-    ptr = new StringValue(str);
+    ptr = create_string(str);
 }
 
 /* Copy ctor, lemásolom a pointert, növelem a referencia számlálót. */
@@ -69,7 +134,7 @@ MyString& MyString::operator= (const MyString& rhs)
     /* Ha már senki más nem hivatkozik a StringValue-ra, akkor
      * felszabadítom a pointert. */
     if (this->ptr->deletable())
-        delete this->ptr;
+        del_str(this->ptr);
 
     /* Beállítom az új pointert és növelem az új érték
      * referencia számlálóját. */
@@ -86,7 +151,7 @@ MyString::~MyString ()
 
     /* StringValue felszabadítása, ha más már nem hivatkozik rá */
     if (this->ptr->deletable())
-        delete ptr;
+        del_str(this->ptr);
 }
 
 /* Visszaadja a string hosszát */
@@ -149,12 +214,12 @@ char& MyString::operator[] (int index)
         throw std::out_of_range("MyString::operator[]");
 
     /* Létrehozok egy új StringValue-t */
-    StringValue* p = new StringValue(this->ptr->get_str());
+    StringValue* p = create_string(this->ptr->get_str());
 
     /* Törlöm az eddig tárolt pointert */
     this->ptr->unref();
     if(this->ptr->deletable())
-        delete this->ptr;
+        del_str(this->ptr);
 
     /* Lecserélem az aktuális pointert az újjonnan létrehozottra,
      * hogy ha valaki megváltoztatja a függvény általn visszaadott
