@@ -9,11 +9,11 @@ class StringValue
         StringValue (const char*);
         ~StringValue ();
 
-        char* get_str ();
+        char* get_str () const;
 
         void ref ();
         void unref ();
-        bool deletable ();
+        bool deletable () const;
 
 #ifdef DEBUG
         int get_ref_cnt();
@@ -31,9 +31,9 @@ class MyString
         MyString& operator= (const MyString&);
         ~MyString ();
 
-        int length();
-        MyString operator+ (const MyString&);
-        MyString operator+ (const char);
+        int length() const;
+        MyString operator+ (const MyString&) const;
+        MyString operator+ (const char) const;
         void operator+= (const MyString&);
         void operator+= (const char);
         char& operator[] (int);

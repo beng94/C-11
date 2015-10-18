@@ -18,7 +18,7 @@ StringValue::~StringValue ()
 }
 
 /* Segédfüggvény, hogy a MyString elérje a beslő string értéket */
-char* StringValue::get_str ()
+char* StringValue::get_str () const
 {
     return this->str;
 }
@@ -37,7 +37,7 @@ void StringValue::unref ()
 
 /* Megadja, hogy a StringValue felszabadítható-e az alapján,
  * hogy van-e még rá valahol hivatkozás. */
-bool StringValue::deletable ()
+bool StringValue::deletable () const
 {
     return this->ref_ == 0;
 }
@@ -90,7 +90,7 @@ MyString::~MyString ()
 }
 
 /* Visszaadja a string hosszát */
-int MyString::length ()
+int MyString::length () const
 {
     return strlen(this->ptr->get_str());
 }
@@ -98,7 +98,7 @@ int MyString::length ()
 /* Tagfüggvényként írtam meg az operátorokat, mert nem
  * akartam gettereket írni. */
 
-MyString MyString::operator+ (const MyString& rhs)
+MyString MyString::operator+ (const MyString& rhs) const
 {
     /* Azt mondta a fordító, hogy nem illik változó méretű
      * tömböt létrehozni, úgyhogy dinamikusan foglalom a
@@ -117,7 +117,7 @@ MyString MyString::operator+ (const MyString& rhs)
     return ret_value;
 }
 
-MyString MyString::operator+ (const char c)
+MyString MyString::operator+ (const char c) const
 {
     /* Visszavezetem az előző függvényre. Mivel const char*-ot
      * vár a MyString ctor-a, létrehozok a char-ból egy char*-ot. */
