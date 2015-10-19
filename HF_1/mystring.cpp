@@ -172,12 +172,12 @@ MyString MyString::operator+ (const MyString& rhs) const
     char* tmp_str = new char[size];
     strcpy(tmp_str, this->ptr->get_str());
     strcat(tmp_str, rhs.ptr->get_str());
-    tmp_str[size] = '\0';
+    tmp_str[size-1] = '\0';
 
     /* Elmentem a visszatérési értéket, mivel fel kell szabadítani
      * a dinamikusan foglalt tmp_str tömböt. */
     MyString ret_value(tmp_str);
-    delete tmp_str;
+    delete[] tmp_str;
 
     return ret_value;
 }
@@ -247,6 +247,9 @@ static const char* read(std::istream& in)
 {
     size_t size = 20;
     char* str = new char[size];
+    /* Valgrind-nak nem tetszett a 284. sor (strcat),
+     * mivel az str inicializálatlan */
+    str[0] = '\0';
 
     /* Addig megy, amíg hiba nélkül be nem olvassa a karaktereket,
      * vagyis amígy tud még karaktert olvasni */
@@ -269,7 +272,7 @@ static const char* read(std::istream& in)
             strcat(tmp_str, tmp);
 
             /* Frissítem az str értékét a temporális változóval */
-            delete str;
+            delete[] str;
             str = new char[size * 2];
             str = tmp_str;
             size *= 2;
@@ -279,6 +282,8 @@ static const char* read(std::istream& in)
          * hozzáfűzöm az új karaktereket */
         else
             strcat(str, tmp);
+
+        delete[] tmp;
     } while(in.fail());
 
     return str;
@@ -290,7 +295,7 @@ std::istream& operator>> (std::istream& in, MyString& rhs)
 
     rhs = MyString(str);
     /* Fel kell szabadítanom a read-ben lefoglalt memóriát */
-    delete str;
+    delete[] str;
 
     return in;
 }
