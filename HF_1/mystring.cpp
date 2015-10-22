@@ -94,17 +94,23 @@ static StringValue* create_string(const char* str)
     return val;
 }
 
-/* Ezzel a függvénnyel jelzi a MyString, hogy a továbbiakban
- * nincsen szüksége a StringValue*-re. */
-static void del_str (StringValue* str)
+static void release_str (StringValue* str)
 {
-    auto id = str_container.find(str->get_str());
+    /* Referencia számláló csökkentése */
+    str->unref();
+    /* Ha mér senki sem hivatkozik rá, felszabadítom */
+    if(str->deletable())
+    {
+        /* Megkeresem a tárolóban az adott string-et */
+        auto id = str_container.find(str->get_str());
 
-    /* Biztosan benne van a tárolóban az elem, úgyhogy nincs szükség
-     * leellenőrizni az id-t. Törlöm a tárolóból a bejegyzést. */
-    str_container.erase(id);
+        /* Biztosan benne van a tárolóban az elem, úgyhogy nincs szükség
+         * leellenőrizni az id-t. Törlöm a tárolóból a bejegyzést. */
+        str_container.erase(id);
 
-    delete str;
+        /* Felszabadítom a pointert */
+        delete str;
+    }
 }
 
 /* Default ctor, üres string-et hoz létre */
@@ -133,13 +139,8 @@ MyString::MyString (MyString&& o) noexcept : ptr(std::move(o.ptr)) {
 
 MyString& MyString::operator= (const MyString& rhs)
 {
-    /* Aktuális pointerre már nincs szükség, csökkentem a
-     * referencia számlálót */
-    this->ptr->unref();
-    /* Ha már senki más nem hivatkozik a StringValue-ra, akkor
-     * felszabadítom a pointert. */
-    if (this->ptr->deletable())
-        del_str(this->ptr);
+    /* Aktuális pointerre már nincs szükség */
+    release_str(this->ptr);
 
     /* Beállítom az új pointert és növelem az új érték
      * referencia számlálóját. */
@@ -151,12 +152,8 @@ MyString& MyString::operator= (const MyString& rhs)
 
 MyString::~MyString ()
 {
-    /* Rerefencia számláló csökkentése */
-    this->ptr->unref();
-
-    /* StringValue felszabadítása, ha más már nem hivatkozik rá */
-    if (this->ptr->deletable())
-        del_str(this->ptr);
+    /* Már nincs szükség a StringValue pointerre */
+    release_str(this->ptr);
 }
 
 /* Visszaadja a string hosszát */
@@ -252,11 +249,8 @@ MyString::Proxy& MyString::Proxy::operator= (char c)
      * lemásolta, ha kellett. */
     delete[] n_str;
 
-    /* Csökkentem az eddig tárolt StringValue referencia számlálóját
-     * és törlöm, ha már nem mutat rá senki. */
-    this->mstrptr->ptr->unref();
-    if(this->mstrptr->ptr->deletable())
-        del_str(this->mstrptr->ptr);
+    /* Már nincsen szükségem a StringValue pointerre */
+    release_str(this->mstrptr->ptr);
 
     /* A Proxyhoz tartozó MyString-ben felülírom a StringValue
      * pointert. */
