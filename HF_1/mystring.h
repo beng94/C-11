@@ -1,5 +1,6 @@
 #include <iostream>
 
+
 class StringValue
 {
     private:
@@ -24,6 +25,21 @@ class MyString
 {
     private:
         StringValue* ptr;
+
+        class Proxy
+        {
+            private:
+                int id;
+                 MyString* mstrptr;
+
+            public:
+                Proxy() = delete;
+                Proxy(int, MyString*);
+
+                Proxy& operator= (char);
+                operator char ();
+        };
+
     public:
         MyString ();
         MyString (const char*);
@@ -36,7 +52,7 @@ class MyString
         MyString operator+ (const char) const;
         void operator+= (const MyString&);
         void operator+= (const char);
-        char& operator[] (int);
+        Proxy operator[] (int);
 
         friend std::ostream& operator<< (std::ostream&, const MyString&);
 

@@ -207,28 +207,13 @@ void MyString::operator+= (const char c)
 
 /* Referenciát adok vissza, hogy meg lehessen változtatni a
  * char értékét. */
-char& MyString::operator[] (int index)
+MyString::Proxy MyString::operator[] (int index)
 {
     /* Indexelés ellenőrzése */
     if (index > this->length() - 1 || index < 0)
         throw std::out_of_range("MyString::operator[]");
 
-    /* Létrehozok egy új StringValue-t */
-    StringValue* p = create_string(this->ptr->get_str());
-
-    /* Törlöm az eddig tárolt pointert */
-    this->ptr->unref();
-    if(this->ptr->deletable())
-        del_str(this->ptr);
-
-    /* Lecserélem az aktuális pointert az újjonnan létrehozottra,
-     * hogy ha valaki megváltoztatja a függvény általn visszaadott
-     * char&-t, akkor ne változzon meg minden az azonos StringValue-re
-     * hivatkozó MyString-ekben az adott karaktert. */
-    this->ptr = p;
-
-    /* Visszaadom a kért karakter referenciáját */
-    return this->ptr->get_str()[index];
+    return Proxy(index, this);
 }
 
 std::ostream& operator<< (std::ostream& os, const MyString& rhs)
@@ -237,6 +222,36 @@ std::ostream& operator<< (std::ostream& os, const MyString& rhs)
     os << rhs.ptr->get_str();
 
     return os;
+}
+
+MyString::Proxy::Proxy(int id, MyString* ptr) :  id{id}, mstrptr{ptr} {}
+
+MyString::Proxy& MyString::Proxy::operator= (char c)
+{
+    const char* str = this->mstrptr->ptr->get_str();
+
+    size_t size = strlen(str);
+    char* n_str = new char[size + 1];
+    strcpy(n_str, str);
+    n_str[this->id] = c;
+    n_str[size] = '\0';
+
+    StringValue* strv = create_string(n_str);
+
+    delete[] n_str;
+
+    this->mstrptr->ptr->unref();
+    if(this->mstrptr->ptr->deletable())
+        del_str(this->mstrptr->ptr);
+
+    this->mstrptr->ptr = strv;
+
+    return *this;
+}
+
+MyString::Proxy::operator char()
+{
+    return (this->mstrptr->ptr->get_str())[this->id];
 }
 
 /* A megadott bemenetről beolvas egy stringet, dinamikus
