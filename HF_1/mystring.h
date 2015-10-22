@@ -45,6 +45,7 @@ class MyString
         MyString ();
         MyString (const char*);
         MyString (const MyString&);
+        MyString (MyString&&) noexcept;
         MyString& operator= (const MyString&);
         ~MyString ();
 
