@@ -228,6 +228,8 @@ MyString::Proxy::Proxy(int id, MyString* ptr) :  id{id}, mstrptr{ptr} {}
 
 MyString::Proxy& MyString::Proxy::operator= (char c)
 {
+    /* Lemásolom a Proxyhoz tartozó MyString string értékét,
+     * hogy egy új változatban változtassam majd meg a karaktert. */
     const char* str = this->mstrptr->ptr->get_str();
 
     size_t size = strlen(str);
@@ -236,14 +238,23 @@ MyString::Proxy& MyString::Proxy::operator= (char c)
     n_str[this->id] = c;
     n_str[size] = '\0';
 
+    /* Létrehozok egy új StringValue-t, a megváltoztatott karakterrel
+     * (Ha már van ilyen értékű string, akkor nem jön majd létre
+     * új StringValue). */
     StringValue* strv = create_string(n_str);
 
+    /* Törlöm az ideiglenes tárolót, a StringValue ctor-a úgyis
+     * lemásolta, ha kellett. */
     delete[] n_str;
 
+    /* Csökkentem az eddig tárolt StringValue referencia számlálóját
+     * és törlöm, ha már nem mutat rá senki. */
     this->mstrptr->ptr->unref();
     if(this->mstrptr->ptr->deletable())
         del_str(this->mstrptr->ptr);
 
+    /* A Proxyhoz tartozó MyString-ben felülírom a StringValue
+     * pointert. */
     this->mstrptr->ptr = strv;
 
     return *this;

@@ -26,6 +26,7 @@ class MyString
     private:
         StringValue* ptr;
 
+        /* Subclass, hogy elérje a MyString privát adattagját. */
         class Proxy
         {
             private:
