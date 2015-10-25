@@ -173,8 +173,8 @@ MyString MyString::operator+ (const MyString& rhs) const
     /* Azt mondta a fordító, hogy nem illik változó méretű
      * tömböt létrehozni, úgyhogy dinamikusan foglalom a
      * segéd tömböt, amiben egymás után fűzöm a két stringet */
-    const size_t size = strlen(this->ptr->get_str()) + strlen(rhs.ptr->get_str()) + 1;
-    char* tmp_str = new char[size];
+    const size_t size = strlen(this->ptr->get_str()) + strlen(rhs.ptr->get_str());
+    char* tmp_str = new char[size + 1];
     strcpy(tmp_str, this->ptr->get_str());
     strcat(tmp_str, rhs.ptr->get_str());
 
