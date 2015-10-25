@@ -40,6 +40,7 @@ class MyString
                 Proxy(int, MyString*);
 
                 Proxy& operator= (char);
+                Proxy& operator= (const Proxy&);
                 operator char ();
         };
 

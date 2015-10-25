@@ -269,6 +269,12 @@ MyString::Proxy& MyString::Proxy::operator= (char c)
     return *this;
 }
 
+MyString::Proxy& MyString::Proxy::operator= (const MyString::Proxy& rhs)
+{
+    /* Visszavezetem a Proxy::operator= (char)-ra */
+    return (*this = rhs.mstrptr->ptr->get_str()[rhs.id]);
+}
+
 MyString::Proxy::operator char()
 {
     return (this->mstrptr->ptr->get_str())[this->id];

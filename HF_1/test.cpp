@@ -104,8 +104,8 @@ int main()
     #ifdef DEBUG
         std::cout << "Testing char& operator[] (int): ";
         char n = m[0];
-        m[0] = '!';
-        assert(strcmp(m.get_str(), "!ig") == 0 &&
+        m[0] = m[1];
+        assert(strcmp(m.get_str(), "iig") == 0 &&
                n == 'b');
         std::cout << "\033[1;32mSuccessful\033[0m" << std::endl;
     #endif
