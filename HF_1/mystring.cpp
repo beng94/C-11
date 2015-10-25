@@ -10,7 +10,6 @@ StringValue::StringValue (const char* str)
     size_t size = strlen(str);
     this->str = new char[size + 1];
     strcpy(this->str, str);
-    this->str[size] = '\0';
 }
 
 StringValue::~StringValue ()
@@ -174,7 +173,6 @@ MyString MyString::operator+ (const MyString& rhs) const
     char* tmp_str = new char[size];
     strcpy(tmp_str, this->ptr->get_str());
     strcat(tmp_str, rhs.ptr->get_str());
-    tmp_str[size-1] = '\0';
 
     /* Elmentem a visszatérési értéket, mivel fel kell szabadítani
      * a dinamikusan foglalt tmp_str tömböt. */
