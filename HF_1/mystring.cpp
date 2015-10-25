@@ -218,6 +218,14 @@ MyString::Proxy MyString::operator[] (int index)
     return Proxy(index, this);
 }
 
+/* Az önértékadás ellenőrzéséhez */
+bool MyString::operator== (const MyString& rhs) const
+{
+    /* Elég a pointerek egyenlőségét vizsgálnom a globális string
+     * kezelés miatt (create_string). */
+    return (rhs.ptr == this->ptr);
+}
+
 std::ostream& operator<< (std::ostream& os, const MyString& rhs)
 {
     /* Kiírom a string értékét */

@@ -55,6 +55,7 @@ class MyString
         void operator+= (const MyString&);
         void operator+= (const char);
         Proxy operator[] (int);
+        bool operator== (const MyString&) const;
 
         friend std::ostream& operator<< (std::ostream&, const MyString&);
 
