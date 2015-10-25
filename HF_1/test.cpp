@@ -48,6 +48,7 @@ int main()
     d = e = "duck";
     #ifdef DEBUG
         std::cout << "Testring MyString operator= (const MyString&): ";
+        e = e;
         assert(strcmp(d.get_str(), e.get_str()) == 0 &&
                strcmp(d.get_str(),"duck") == 0 &&
                d.get_ptr() == e.get_ptr() &&
