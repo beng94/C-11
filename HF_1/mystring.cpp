@@ -131,10 +131,10 @@ MyString::MyString (const MyString& str)
     this->ptr->ref();
 }
 
-/* Move ctor */
-MyString::MyString (MyString&& o) noexcept : ptr(std::move(o.ptr)) {
-    std::cout << "move"<< std::endl;
-}
+/*
+* Move ctor *
+MyString::MyString (MyString&& o) noexcept : ptr(std::move(o.ptr)) {}
+*/
 
 MyString& MyString::operator= (const MyString& rhs)
 {
