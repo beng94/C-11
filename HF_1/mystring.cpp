@@ -138,6 +138,10 @@ MyString::MyString (MyString&& o) noexcept : ptr(std::move(o.ptr)) {
 
 MyString& MyString::operator= (const MyString& rhs)
 {
+    /* Önértékadás ellenőrzése */
+    if (*this == rhs)
+        return *this;
+
     /* Aktuális pointerre már nincs szükség */
     release_str(this->ptr);
 
