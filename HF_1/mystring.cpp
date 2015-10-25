@@ -198,15 +198,15 @@ MyString MyString::operator+ (const char c) const
 }
 
 /* Visszavezetem az előző függvényre */
-void MyString::operator+= (const MyString& rhs)
+MyString MyString::operator+= (const MyString& rhs)
 {
-    *this = *this + rhs;
+    return (*this = *this + rhs);
 }
 
 /* Visszavezetem az előző függvényekre */
-void MyString::operator+= (const char c)
+MyString MyString::operator+= (const char c)
 {
-    *this = *this + c;
+    return (*this = *this + c);
 }
 
 /* Referenciát adok vissza, hogy meg lehessen változtatni a

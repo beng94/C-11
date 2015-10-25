@@ -52,8 +52,8 @@ class MyString
         int length() const;
         MyString operator+ (const MyString&) const;
         MyString operator+ (const char) const;
-        void operator+= (const MyString&);
-        void operator+= (const char);
+        MyString operator+= (const MyString&);
+        MyString operator+= (const char);
         Proxy operator[] (int);
         bool operator== (const MyString&) const;
 
