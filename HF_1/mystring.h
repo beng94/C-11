@@ -8,6 +8,8 @@ class StringValue
         char* str;
     public:
         StringValue (const char*);
+        StringValue (const StringValue&) = delete;
+        StringValue& operator= (const StringValue&) = delete;
         ~StringValue ();
 
         char* get_str () const;
@@ -34,7 +36,7 @@ class MyString
                  MyString* mstrptr;
 
             public:
-                Proxy() = delete;
+                Proxy() = delete; /* Hogy véletlenül se hívjam */
                 Proxy(int, MyString*);
 
                 Proxy& operator= (char);
